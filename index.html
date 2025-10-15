@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dein Lento Rezepte Coach</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="https://static.wixstatic.com/media/332a5a_6916608d791a4d11971e76b4810d2122~mv2.png/v1/fill/w_380,h_124,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Lento%20Logo%20.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0"
+  }
+}
+</script>
+</head>
+<body>
+
+    <!-- PAGE 1: INPUT FORMS -->
+    <div id="page-input" class="page">
+        <header>
+            <img src="https://static.wixstatic.com/media/332a5a_6916608d791a4d11971e76b4810d2122~mv2.png/v1/fill/w_380,h_124,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Lento%20Logo%20.png" alt="Lento Logo" id="logo">
+            <div>
+                <h1>Dein Lento Rezepte Coach</h1>
+                <p>Erhalte gesunde, ausgewogene und leicht nachkochbare Gerichte, die auf dich zugeschnitten sind.</p>
+            </div>
+        </header>
+        <main>
+            <section class="form-container">
+                <div class="tab-navigation">
+                    <button id="tab-recipe" class="tab-button active" aria-selected="true">Einzelnes Rezept</button>
+                    <button id="tab-planner" class="tab-button" aria-selected="false">Wochenplaner</button>
+                    <button id="tab-favorites" class="tab-button" aria-selected="false">Favoriten</button>
+                </div>
+    
+                <!-- Tab Panel for Single Recipe -->
+                <div id="panel-recipe" class="tab-panel active">
+                    <h2>Deine Wünsche</h2>
+                    <form id="recipe-form">
+                        <fieldset>
+                            <legend>1. Kategorie</legend>
+                            <div class="radio-group">
+                                <div>
+                                    <input type="radio" id="category-vegan" name="category" value="vegan" checked>
+                                    <label for="category-vegan">Vegan</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="category-vegetarian" name="category" value="vegetarisch">
+                                    <label for="category-vegetarian">Vegetarisch</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="category-meat" name="category" value="mit magerem Fleisch">
+                                    <label for="category-meat">Mageres Fleisch</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="category-fish" name="category" value="mit Fisch">
+                                    <label for="category-fish">Fisch</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="category-custom" name="category" value="custom">
+                                    <label for="category-custom">Sonstiges</label>
+                                </div>
+                            </div>
+                            <div id="custom-category-container" class="hidden">
+                                <label for="custom-category-input" class="sr-only">Eigene Kategorie</label>
+                                <input type="text" id="custom-category-input" name="custom-category" placeholder="Eigene Wünsche, z.B. Asiatisch, Italienisch...">
+                            </div>
+                        </fieldset>
+    
+                        <fieldset>
+                            <legend>2. Ernährungsziele (optional)</legend>
+                            <div class="checkbox-group">
+                                <div>
+                                    <input type="checkbox" id="goal-low-calorie" name="dietary-goal" value="kalorienarm">
+                                    <label for="goal-low-calorie">Kalorienarm</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="goal-high-protein" name="dietary-goal" value="proteinreich">
+                                    <label for="goal-high-protein">Proteinreich</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="goal-gluten-free" name="dietary-goal" value="glutenfrei">
+                                    <label for="goal-gluten-free">Glutenfrei</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="goal-lactose-free" name="dietary-goal" value="laktosefrei">
+                                    <label for="goal-lactose-free">Laktosefrei</label>
+                                </div>
+                                 <div>
+                                    <input type="checkbox" id="goal-gut-friendly" name="dietary-goal" value="darmfreundlich">
+                                    <label for="goal-gut-friendly">Darmfreundlich</label>
+                                </div>
+                            </div>
+                        </fieldset>
+    
+                        <fieldset>
+                            <legend>3. Zutaten (optional)</legend>
+                            <label for="ingredients" class="sr-only">Zutaten</label>
+                            <textarea id="ingredients" name="ingredients" rows="4" placeholder="Was ist im Kühlschrank? (z.B. Hähnchenbrust, Brokkoli, Reis)"></textarea>
+                            <small>Wenn du hier nichts eingibst, schlägt die KI Zutaten vor.</small>
+                        </fieldset>
+    
+                        <fieldset>
+                            <legend>4. Weitere Kriterien</legend>
+                            <div class="criteria-grid">
+                                <div>
+                                    <label for="servings">Anzahl Personen</label>
+                                    <input type="number" id="servings" name="servings" value="2" min="1" max="10">
+                                </div>
+                                <div>
+                                    <label for="prep-time">Zeit (in Min.)</label>
+                                    <input type="number" id="prep-time" name="prep-time" value="30" min="5" step="5">
+                                </div>
+                                <div>
+                                    <label for="difficulty">Schwierigkeit</label>
+                                    <select id="difficulty" name="difficulty">
+                                        <option value="einfach">Einfach</option>
+                                        <option value="mittel">Mittel</option>
+                                        <option value="schwer">Schwer</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+                        
+                        <button type="submit" id="generate-button">
+                            <span class="button-text">Rezept generieren</span>
+                            <div class="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Tab Panel for Meal Planner -->
+                <div id="panel-planner" class="tab-panel">
+                    <h2>Dein Wochenplan</h2>
+                     <form id="meal-plan-form">
+                        <fieldset>
+                            <legend>1. Kriterien für den Plan</legend>
+                             <div class="criteria-grid">
+                                <div>
+                                    <label for="plan-days">Anzahl Tage</label>
+                                    <input type="number" id="plan-days" name="plan-days" value="5" min="1" max="7">
+                                </div>
+                                <div>
+                                    <label for="plan-servings">Anzahl Personen</label>
+                                    <input type="number" id="plan-servings" name="plan-servings" value="2" min="1" max="10">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                             <legend>2. Mahlzeiten pro Tag</legend>
+                             <div class="checkbox-group">
+                                 <div>
+                                    <input type="checkbox" id="meal-lunch" name="meals" value="Mittagessen" checked>
+                                    <label for="meal-lunch">Mittagessen</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="meal-dinner" name="meals" value="Abendessen" checked>
+                                    <label for="meal-dinner">Abendessen</label>
+                                </div>
+                             </div>
+                        </fieldset>
+                         <fieldset>
+                             <legend>3. Ernährungsstil & Ziele</legend>
+                             <p>Die allgemeinen Ernährungsziele vom "Einzelnes Rezept" Tab werden übernommen.</p>
+                         </fieldset>
+                        <button type="submit" id="generate-plan-button">
+                            <span class="button-text">Wochenplan erstellen</span>
+                            <div class="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab Panel for Favorites -->
+                 <div id="panel-favorites" class="tab-panel">
+                    <h2>Gespeicherte Favoriten</h2>
+                    <div class="info-box">
+                       <p><strong>Wichtiger Hinweis:</strong> Deine Favoriten werden nur lokal in diesem Browser auf diesem Gerät gespeichert. Sie werden nicht zwischen verschiedenen Geräten oder Browsern synchronisiert.</p>
+                    </div>
+                    <p>Hier werden deine Lieblingsrezepte angezeigt. Klicke auf "Favoriten anzeigen", um deine gespeicherte Liste zu sehen.</p>
+                    <button type="button" class="secondary-button" id="show-favorites-button">Favoriten anzeigen</button>
+                 </div>
+    
+            </section>
+        </main>
+    </div>
+
+    <!-- PAGE 2: LOADING SCREEN -->
+    <div id="page-loading" class="page hidden">
+        <div class="loading-content">
+            <div class="pot-animation">
+                <div class="flying-ingredients">
+                    <div class="ingredient ingredient-1">🥕</div>
+                    <div class="ingredient ingredient-2">🥦</div>
+                    <div class="ingredient ingredient-3">🍅</div>
+                    <div class="ingredient ingredient-4">🍄</div>
+                    <div class="ingredient ingredient-5">🧅</div>
+                </div>
+                <div class="pot">
+                    <div class="bubbles">
+                        <span class="bubble"></span>
+                        <span class="bubble"></span>
+                        <span class="bubble"></span>
+                        <span class="bubble"></span>
+                        <span class="bubble"></span>
+                    </div>
+                </div>
+            </div>
+            <h3>Dein Lento Coach kreiert dein gesundes Meisterwerk...</h3>
+            <div class="progress-bar">
+                <div class="progress-bar-inner"></div>
+            </div>
+            <div class="fun-fact-container">
+                <p class="fun-fact-title">Wusstest du schon?</p>
+                <p id="fun-fact-text">Avocados sind Beeren, aber Erdbeeren nicht.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: OUTPUT -->
+    <div id="page-output" class="page hidden">
+         <section class="recipe-container" aria-live="polite">
+            <div id="recipe-output">
+                <p class="placeholder">Dein persönliches Rezept erscheint hier...</p>
+            </div>
+            <div id="meal-plan-output" style="display: none;">
+                 <p class="placeholder">Dein persönlicher Wochenplan erscheint hier...</p>
+            </div>
+            <div id="favorites-output" style="display: none;">
+                <p class="placeholder">Deine gespeicherten Rezepte erscheinen hier...</p>
+           </div>
+        </section>
+    </div>
+    
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG0C+wFjrBgixfl4ZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4D7lrdigTBzIP5yt1FLEJpSYnb1ogmrha3BPZCVCIFcCRpkSGd7MVGTD+A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script type="module" src="index.tsx"></script>
+</body>
+</html>
